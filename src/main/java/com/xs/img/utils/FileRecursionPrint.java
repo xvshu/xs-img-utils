@@ -1,4 +1,4 @@
-package img;
+package com.xs.img.utils;
 
 import java.util.*;
 import java.io.*;

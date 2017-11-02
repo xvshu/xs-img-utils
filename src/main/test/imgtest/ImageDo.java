@@ -1,4 +1,7 @@
-package img;
+package imgtest;
+
+import com.xs.img.utils.FileRecursionPrint;
+import com.xs.img.utils.ImageUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,14 +21,12 @@ public class ImageDo {
         if(filespng!=null)
             files.addAll(filespng);
 
+        int size = files.size();
+        int count = files.size();
         for(String oneF : files){
-            System.out.println("找到文件："+oneF);
-        }
-
-        for(String oneF : files){
-            System.out.println("开始转换文件："+oneF);
-            ImageUtils.pressTime(oneF,"微软雅黑", Font.BOLD,Color.white,30,30,0.83F);
-            System.out.println("转换文件完成："+oneF);
+            ImageUtils.pressTime(oneF,"微软雅黑", Font.BOLD,Color.white,30,30,0.83F,true);
+            size-=1;
+            System.out.println(size+"/"+count);
         }
     }
 }

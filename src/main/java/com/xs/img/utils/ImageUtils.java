@@ -1,4 +1,4 @@
-package img;
+package com.xs.img.utils;
 
 
 import com.drew.imaging.ImageMetadataReader;
@@ -75,31 +75,37 @@ public class ImageUtils {
         }
     }
 
+
     /**
      * 添加文字水印
+     * @param pressText 水印文字
      * @param targetImg 目标图片路径，如：C://myPictrue//1.jpg
-     * @param pressText 水印文字， 如：中国证券网
      * @param fontName 字体名称，    如：宋体
      * @param fontStyle 字体样式，如：粗体和斜体(Font.BOLD|Font.ITALIC)
-     * @param fontSize 字体大小，单位为像素
      * @param color 字体颜色
      * @param x 水印文字距离目标图片左侧的偏移量，如果x<0, 则在正中间
      * @param y 水印文字距离目标图片上侧的偏移量，如果y<0, 则在正中间
      * @param alpha 透明度(0.0 -- 1.0, 0.0为完全透明，1.0为完全不透明)
+     * @param iscover 日期是否需要遮板（true需要，false不需要）
      */
-    public static void pressText(String targetImg, String pressText, String fontName, int fontStyle, int fontSize, Color color, int x, int y, float alpha) {
+    public static void pressText(String pressText,String targetImg, String fontName, int fontStyle, Color color, int x, int y, float alpha,boolean iscover) {
         try {
             File file = new File(targetImg);
-
             Image image = ImageIO.read(file);
             int width = image.getWidth(null);
             int height = image.getHeight(null);
+
+            int fontSize = width/25;
+
+            x=width-fontSize*11;
+            y=height - fontSize*2;
+
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = bufferedImage.createGraphics();
             g.drawImage(image, 0, 0, width, height, null);
             g.setFont(new Font(fontName, fontStyle, fontSize));
             g.setColor(color);
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
+
 
             int width_1 = fontSize * getLength(pressText);
             int height_1 = fontSize;
@@ -116,6 +122,15 @@ public class ImageUtils {
                 y = heightDiff;
             }
 
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.38F));
+
+            g.drawRect(x, y,fontSize*11,fontSize+10);//画线框
+            g.setColor(Color.gray);
+            g.fillRect(x, y,fontSize*11,fontSize+10);
+            g.setColor(color);
+
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
+
             g.drawString(pressText, x, y + height_1);
             g.dispose();
             ImageIO.write(bufferedImage, PICTRUE_FORMATE_JPG, file);
@@ -123,6 +138,7 @@ public class ImageUtils {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 添加时间水印
@@ -133,8 +149,9 @@ public class ImageUtils {
      * @param x 水印文字距离目标图片左侧的偏移量，如果x<0, 则在正中间
      * @param y 水印文字距离目标图片上侧的偏移量，如果y<0, 则在正中间
      * @param alpha 透明度(0.0 -- 1.0, 0.0为完全透明，1.0为完全不透明)
+     * @param iscover 日期是否需要遮板（true需要，false不需要）
      */
-    public static void pressTime(String targetImg, String fontName, int fontStyle, Color color, int x, int y, float alpha) {
+    public static void pressTime(String targetImg, String fontName, int fontStyle, Color color, int x, int y, float alpha,boolean iscover) {
         try {
             File file = new File(targetImg);
             String pressText = getCreatedTime(file);
@@ -269,7 +286,7 @@ public class ImageUtils {
         long time = f.lastModified();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         cal.setTimeInMillis(time);
-        System.out.println("getModifiedTime result:"+formatter.format(cal.getTime()));
+        System.out.println("getModifiedTime result:"+formatter.format(cal.getTime())+" path:"+f.getPath());
         return  formatter.format(cal.getTime());
         //输出：修改时间[2]    2009-08-17 10:32:38
     }
@@ -297,7 +314,6 @@ public class ImageUtils {
                 break;
             }
         }
-        System.out.println("getMakeTimeByEXIF result:"+String.valueOf(result));
         return result;
     }
 
